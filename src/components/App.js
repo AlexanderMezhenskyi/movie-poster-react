@@ -2,6 +2,7 @@ import React from "react";
 //import { moviesData } from '../moviesData';
 import MovieItem from './MovieItem';
 import MovieTabs from './MovieTabs';
+import Pagination from './Pagination';
 import {API_URL, API_KEY_3} from '../utils/api';
 
 class App extends React.Component {
@@ -11,7 +12,9 @@ class App extends React.Component {
     this.state = {
       movies: [],
       moviesWillWatch: [],
-      sort_by: 'popularity.desc'
+      sort_by: 'popularity.desc',
+      page: 1,
+      total_pages: 1
     }
   }
 
@@ -20,21 +23,37 @@ class App extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.sort_by !== this.state.sort_by) {
+    if ((prevState.sort_by !== this.state.sort_by) || (prevState.page !== this.state.page)) {
       console.log('call');
       this.getMoies();
     }
   }
 
   getMoies = () => {
-    fetch(`${API_URL}/discover/movie?api_key=${API_KEY_3}&sort_by=${this.state.sort_by}`)
+    fetch(`${API_URL}/discover/movie?api_key=${API_KEY_3}&sort_by=${this.state.sort_by}&page=${this.state.page}`)
     .then((response) => {
       return response.json();
     })
     .then((data) => {
       this.setState({
-        movies: [...data.results]
+        movies: [...data.results],
+        page: data.page,
+        total_pages: data.total_pages
       });
+    });
+  }
+
+  goToPreviousPage = () => {
+    console.log('goToPreviousPage');
+    this.setState({
+      page: this.state.page - 1
+    }); 
+  }
+
+  goToNextPage = () => {
+    console.log('goToNextPage');
+    this.setState({
+      page: this.state.page + 1
     });
   }
 
@@ -102,6 +121,16 @@ class App extends React.Component {
             {this.state.moviesWillWatch.map(movie => {
               return <p key={movie.id}>{movie.title}</p>;
             })}
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <Pagination 
+                total_pages={this.state.total_pages}
+                page={this.state.page}
+                goToPreviousPage={this.goToPreviousPage}
+                goToNextPage={this.goToNextPage}
+            />
           </div>
         </div>
       </div>
