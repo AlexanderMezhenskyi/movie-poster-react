@@ -1,5 +1,7 @@
 import React, {Component} from "react";
 
+let classNames = require('classnames');
+
 class MovieTabs extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props.sort_by !== nextProps.sort_by) {
@@ -17,7 +19,10 @@ class MovieTabs extends Component {
     }
   
     const getClassLink = (value) => {
-      return `nav-link ${sort_by === value ? 'active' : null}`
+      return classNames({
+        'nav-link': true,
+        active: sort_by === value,
+      });
     }
   
     return (
